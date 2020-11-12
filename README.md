@@ -1,2 +1,2 @@
-# Tower-Siege
-Knock down the blocks with the hexagon before all of your lives run out.
+# p5.play-boilerplate
+Boiler plate for p5.play
