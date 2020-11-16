@@ -5,9 +5,12 @@ const Constraint = Matter.Constraint;
 
 var engine, world;
 
-var lives = 3;
-
+var lives = 5;
+var level = 1;
 var polyIMG;
+
+var check = 0;
+var gamestate = "play";
 
 function preload() {
   polyIMG = loadImage("polygon.png");
@@ -25,31 +28,9 @@ function setup() {
 
   stand1 = new Ground(3 * 350, 2 * (height / 3), width / 5, 20);
 
-  //Bottom Layer
-  box1 = new Box(1050, 2 * (height / 3) - 80, 40, 60);
-  box2 = new Box(1010, 2 * (height / 3) - 80, 40, 60);
-  box3 = new Box(1090, 2 * (height / 3) - 80, 40, 60);
-  box4 = new Box(970, 2 * (height / 3) - 80, 40, 60);
-  box5 = new Box(1130, 2 * (height / 3) - 80, 40, 60);
+  pyramid = new Pyramid(1050, 2 * (height / 3) - 80, 40, 60);
 
-  //Second Layer
-  box6 = new Box(1030, 2 * (height / 3) - 140, 40, 60);
-  box7 = new Box(1070, 2 * (height / 3) - 140, 40, 60);
-  box8 = new Box(990, 2 * (height / 3) - 140, 40, 60);
-  box9 = new Box(1110, 2 * (height / 3) - 140, 40, 60);
-
-  //Third Layer
-  box10 = new Box(1050, 2 * (height / 3) - 200, 40, 60);
-  box11 = new Box(1010, 2 * (height / 3) - 200, 40, 60);
-  box12 = new Box(1090, 2 * (height / 3) - 200, 40, 60);
-
-  //Fourth Layer
-  box13 = new Box(1030, 2 * (height / 3) - 260, 40, 60);
-  box14 = new Box(1070, 2 * (height / 3) - 260, 40, 60);
-
-  //Top Layer
-  box15 = new Box(1050, 2 * (height / 3) - 320, 40, 60);
-
+  
 
   //The Polygon
   var polyOP = {
@@ -65,48 +46,118 @@ function setup() {
 
 function draw() {
   background(173, 216, 230);
-  strokeWeight(5);
   Engine.update(engine);
 
   push();
   strokeWeight(1);
   textSize(25);
   fill("black");
-  text("Drag the mouse the launch the hexagon, and knock down as many as you can before your lives run out!", 200, 70);
-  text("Press space to bring the hexagon back to starting position. You will lost a life every time you launch.", 200, 120);
+  text("Drag the mouse the launch the hexagon, and knock down as many as you can before your lives run out!", 330, 30);
+  text("Press space to bring the hexagon back to starting position. You will lost a life every time you launch.", 330, 70);
   
   textSize(35);
   text("Lives: " + lives, 20, 40);
+
+  text("Level: " + level, 160, 40);
   pop();
 
   ground.display();
   stand1.display();
 
-  //Display Bottom Layer
-  box1.display();
-  box2.display();
-  box3.display();
-  box4.display();
-  box5.display();
+  if (!pyramid.destroyed()) {
+    pyramid.display();
+  }
+  if (pyramid.destroyed()) {
+    gamestate = "moveOn";
+  }
+  
+  if (gamestate == "moveOn") {
+    textSize(20);
+    text("Press enter to move on to the next level", 100, 200);
+    if (level == 1) {
+      stand1.destroy();
+    }
+    if (level == 2) {
+      stand2.destroy();
+    }
+    if (level == 3) {
+      stand3.destroy();
+      stand4.destroy();
+    }
+  }
+  if (gamestate == "WIN") {
+    textSize(40);
+    text("YOU WIN!!!", width / 2 - 100, height / 2);
+    stand5.destroy();
+    stand6.destroy();
 
-  //Display Second Layer
-  box6.display();
-  box7.display();
-  box8.display();
-  box9.display();
-
-  //Display Third Layer
-  box10.display();
-  box11.display();
-  box12.display();
-
-  //Display Fourth Layer
-  box13.display();
-  box14.display();
-
-  //Display Top Layer
-  box15.display();
-
+    /*pyraflow1.display();
+    pyraflow2.display();
+    pyraflow3.display();
+    pyraflow4.display();
+    pyraflow5.display();
+    pyraflow6.display();
+    pyraflow7.display();
+    pyraflow8.display();
+    pyraflow9.display();
+    pyraflow10.display();*/
+  }
+  if (level == 2) {
+    pyramid2.display();
+    stand2.display();
+    if (pyramid2.destroyed()) {
+      gamestate = "moveOn";
+    }
+  }
+  if (level == 3) {
+    pyramid3.display();
+    stand3.display();
+    pyramid4.display();
+    stand4.display();
+    if (pyramid3.destroyed()) {
+      check += 1;
+    }
+    if (pyramid4.destroyed()) {
+      check += 1;
+    }
+    if (check == 2) {
+      gamestate = "moveOn";
+    }
+  }
+  if (level == 4) {
+    pyramid5.display();
+    pyramid6.display();
+    pyramid7.display();
+    pyramid8.display();
+    stand5.display();
+    stand6.display();
+    if (pyramid5.destroyed()) {
+      check += 1;
+    }
+    if (pyramid6.destroyed()) {
+      check += 1;
+    }
+    if (pyramid7.destroyed()) {
+      check += 1;
+    }
+    if (pyramid8.destroyed()) {
+      check += 1;
+    }
+    if (check == 6) {
+      gamestate = "WIN";
+      /*pyraflow1 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow2 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow3 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow4 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow5 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow6 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow7 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow8 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow9 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      pyraflow10 = new Pyramid(random(width), random(-height, 0), random(15, 30), random(15, 30), false);
+      */leftwall= new Ground(0, height / 2, 1, height);
+    }
+  }
 
   //Display Polygon
   var angle = polygon.angle;
@@ -125,18 +176,59 @@ function draw() {
 function mouseDragged() {
   var time = 60
   if (time > 0) {
-    Matter.Body.setPosition(polygon, {x: mouseX, y: mouseY})
+    if (lives > 0) {
+      if (slingshot.move == true) {
+        Matter.Body.setPosition(polygon, {x: mouseX, y: mouseY})
+      }
+    }
   }
 }
 
 function mouseReleased() {
-  slingshot.fly();
-  lives -= 1;
+  if (lives > 0) {
+    if (slingshot.move == true) {
+      slingshot.fly();
+      lives -= 1;
+    }
+  }
 }
 
 function keyPressed() {
   if (keyCode == 32) {
     if (lives > 0) {
+      Matter.Body.setPosition(polygon, {x: 200, y: height / 2})
+      slingshot.attach();
+    }
+  }
+  if (keyCode == 13) {
+    if (gamestate == "moveOn") {
+      if (level == 1) {
+        pyramid2 = new Pyramid(700, 330, 20, 40);
+        stand2 = new Ground(700, 350, 200, 10);
+        lives = 4;
+      }
+      if (level == 2) {
+        pyramid3 = new Pyramid(700, 650, 30, 50);
+        pyramid4 = new Pyramid(1300, 400, 50, 70);
+
+        stand3 = new Ground(700, 690, 250, 10);
+        stand4 = new Ground(1300, 450, 300, 15);
+        lives = 3;
+      }
+      if (level == 3) {
+        pyramid5 = new Pyramid(1200, 220, 25, 40);
+        pyramid6 = new Pyramid(1200, 840, 130, 150);
+        pyramid7 = new Pyramid(800, 400, 25, 40);
+        pyramid8 = new Pyramid(600, 700, 25, 40);
+
+        stand5 = new Ground(800, 420, 200, 15);
+        stand6 = new Ground(600, 720, 200, 15);
+        lives = 7;
+      }
+      level += 1;
+      gamestate = "play";
+      Matter.Body.setPosition(polygon, {x: 200, y: height / 2})
+      polygon.speed = 0;
       slingshot.attach();
     }
   }

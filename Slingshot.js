@@ -9,6 +9,7 @@ class Slingshot{
         this.pointB = point2
         this.body1 = body1
         this.chain = Constraint.create(options);
+        this.move = true;
         World.add(world, this.chain);
     }
     display() {
@@ -41,8 +42,10 @@ class Slingshot{
     }
     fly() {
         this.chain.bodyA = null;
+        this.move = false;
     }
     attach() {
         this.chain.bodyA = this.body1;
+        this.move = true;
     }
 }
