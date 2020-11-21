@@ -51,6 +51,10 @@ class Box{
         if (this.tick == 1) {
           this.Visibility -= 5;
         }
+        if (this.Visibility < 50 && this.Visibility > 0) {
+          score += 1;
+        }
+
       }
       else{
         var angle = this.body.angle;

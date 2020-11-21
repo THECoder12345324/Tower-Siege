@@ -5,3 +5,14 @@ html, body {
 canvas {
   display: block;
 }
+button {
+  display: block;
+  background-color: lavender;
+  border-style: solid;
+  border-radius: 100px;
+}
+
+button:hover {
+  background-color: peachpuff;
+  transform: scale(1.5) perspective(1px)
+}
