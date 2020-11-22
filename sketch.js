@@ -5,19 +5,29 @@ const Constraint = Matter.Constraint;
 
 var engine, world;
 
+var INFINITEAMOUNT = 400;
+var POLYGONAMOUNT = 200;
+
 var lives = 5;
 var level = 1;
-var score = 0;
+var score = 300;
 
-var polyIMG;
+var polyIMG, infinIMG;
 
 var check = 0;
 var gamestate = "play";
 
 var section = "main";
 
+var ball = "polygon1";
+
+var purchase = "none";
+var purchase2 = "none";
+var infinlife = false;
+
 function preload() {
   polyIMG = loadImage("polygon.png");
+  infinIMG = loadImage("infinity.png");
 }
 
 function setup() {
@@ -44,10 +54,25 @@ function setup() {
   polygon = Bodies.polygon(200, height / 2, 6, 30, polyOP);
   World.add(world, polygon);
 
+  var polyOP2 = {
+    density: 0.9,
+    friction: 0.8,
+  }
+  polygon2 = Bodies.polygon(200, height / 2, 6, 70, polyOP2);
+
   //The Slingshot
   slingshot = new Slingshot(polygon, {x: 250, y: height / 2}, 0.02, 10);
+  slingshot2 = new Slingshot(polygon2, {x: 250, y: height / 2}, 0.02, 7);
 
   shopb = createButton("SHOP");
+  exitb = createButton("Exit To Game");
+  exitb.hide();
+
+  polygon2buy = createButton("BUY");
+  polygon2buy.hide();
+
+  infinbutton = createButton("BUY");
+  infinbutton.hide();
 }
 
 function draw() {
@@ -60,7 +85,8 @@ function draw() {
     fill("red");
     shopb.position(30, height - 100);
     shopb.size(100, 40);
-    shopb.mousePressed(activate)
+    shopb.mousePressed(activate);
+    polygon2buy.hide();
 
     push();
     strokeWeight(1);
@@ -70,9 +96,15 @@ function draw() {
     text("Press space to bring the hexagon back to starting position. You will lost a life every time you launch.", 330, 70);
     
     textSize(35);
-    text("Lives: " + lives, 20, 40);
+    if (infinlife === false) {
+      text("Lives: " + lives, 20, 40);
+    }
+    else {
+      text("Lives: ", 20, 40);
+      image(infinIMG, 110, 15, 50, 30);
+    }
 
-    text("Level: " + level, 160, 40);
+    text("Level: " + level, 170, 40);
 
     text("Money: " + score, 20, 80);
     pop();
@@ -155,54 +187,194 @@ function draw() {
     }
 
     //Display Polygon
-    var angle = polygon.angle;
-      
-    push();
-    translate(polygon.position.x, polygon.position.y);
-    rotate(angle);
-    imageMode(CENTER);
-    image(polyIMG, 0, 0, 60, 60);
-    pop();
+    if (ball === "polygon1") {
+      var angle = polygon.angle;
+        
+      push();
+      translate(polygon.position.x, polygon.position.y);
+      rotate(angle);
+      imageMode(CENTER);
+      image(polyIMG, 0, 0, 60, 60);
+      pop();
+    }
+    else if (ball === "polygon2") {
+      var angle = polygon2.angle;
+        
+      push();
+      translate(polygon2.position.x, polygon2.position.y);
+      rotate(angle);
+      imageMode(CENTER);
+      image(polyIMG, 0, 0, 140, 140);
+      pop();
+    }
 
     //Display Slingshot
-    slingshot.display();
+    if (ball === "polygon1") {
+      slingshot.display();
+    }
+    if (ball === "polygon2") {
+      slingshot2.display();
+    }
   }
 
   if (section === "shop") {
+
+    //Show the title and amount of money
     textSize(50);
     fill("black");
-    text("SHOP", width / 2 - 70, 80);
+    text("Shop", width / 2 - 10, 80);
+    text("Money: " + score, 20, 80);
+
+    //Display what the purchase is
+    image(polyIMG, width / 2 - 8, height / 2 - 120, 140, 140)
+    textSize(20);
+    fill('black');
+    text("Bigger and more destructive polygon: $150", width / 2 - 120, height / 2 + 60);
+
+    //Setting exit button options
+    exitb.position(width - 140, height - 100);
+    exitb.size(100, 60);
+    exitb.mousePressed(activate2);
+
+    //Setting buying big polygon button options
+    if (score > POLYGONAMOUNT && purchase != "big") {
+      polygon2buy.show();
+      polygon2buy.position(width / 2, (height / 5) * 3);
+      polygon2buy.size(120, 60);
+      polygon2buy.mousePressed(purchasepoly);
+    }
+    if (score < POLYGONAMOUNT && purchase != "big") {
+      textSize(15);
+      polygon2buy.hide();
+      text("Not enough money", width / 2 - 10, (height / 8) * 5)
+    }
+    if (purchase === "big") {
+      polygon2buy.hide();
+      textSize(18);
+      fill("black");
+      text("Purchased", width / 2 + 10, (height / 8)  * 5)
+    }
+
+    /*
+
+
+
+
+    To easily see the next item in the shop
+
+
+
+
+    */
+    image(infinIMG, width / 2 + 420, height / 2 - 120, 240, 120);
+    textSize(20);
+    text("Infinite Lives: $300", (width / 2) + 450, (height / 2) + 60);
+    if (score > INFINITEAMOUNT && purchase2 != "big") {
+      infinbutton.show();
+      infinbutton.position(width / 2 + 428, (height / 5) * 3);
+      infinbutton.size(120, 60);
+      infinbutton.mousePressed(purchaselife);
+    }
+    if (score < INFINITEAMOUNT && purchase2 != "big") {
+      textSize(15);
+      infinbutton.hide();
+      text("Not enough money", width / 2 + 480, (height / 8) * 5)
+    }
+    if (purchase2 === "big") {
+      infinbutton.hide();
+      textSize(18);
+      fill("black");
+      text("Purchased", width / 2 + 438, (height / 8)  * 5)
+    }
   }
 }
 
 function mouseDragged() {
-  if (mouseX < (polygon.position.x + 50)) {
-    if ((polygon.position.y - 250) < mouseY && (polygon.position.y + 250) > mouseY) {
-      if (lives > 0) {
-        if (slingshot.move == true) {
-          Matter.Body.setPosition(polygon, {x: mouseX, y: mouseY})
-        }
+  
+  if (lives > 0 && infinlife === false) {
+    if (ball === "polygon1") {
+      if (slingshot.move == true) {
+        Matter.Body.setPosition(polygon, {x: mouseX / 2, y: mouseY})
+      }
+    }
+    if (ball === "polygon2") {
+      if (slingshot2.move == true) {
+        Matter.Body.setPosition(polygon2, {x: mouseX / 2, y: mouseY})
+      }
+    }
+  }
+  if (infinlife === true) {
+    if (ball === "polygon1") {
+      if (slingshot.move == true) {
+        Matter.Body.setPosition(polygon, {x: mouseX / 2, y: mouseY})
+      }
+    }
+    if (ball === "polygon2") {
+      if (slingshot2.move == true) {
+        Matter.Body.setPosition(polygon2, {x: mouseX / 2, y: mouseY})
       }
     }
   }
 }
 
 function mouseReleased() {
-  if (lives > 0) {
-    if (slingshot.move == true) {
-      slingshot.fly();
-      lives -= 1;
+  if (lives > 0 && infinlife === false) {
+    if (section === "main") {
+      if (ball === "polygon1") {
+        if (slingshot.move == true) {
+          slingshot.fly();
+          lives -= 1;
+        }
+      }
+      if (ball === "polygon2") {
+        if (slingshot2.move == true) {
+          slingshot2.fly();
+          lives -= 1;
+        }
+      }
+    }
+  }
+
+  if (infinlife === true) {
+    if (section === "main") {
+      if (ball === "polygon1") {
+        if (slingshot.move == true) {
+          slingshot.fly();
+        }
+      }
+      if (ball === "polygon2") {
+        if (slingshot2.move == true) {
+          slingshot2.fly();
+        }
+      }
     }
   }
 }
 
 function keyPressed() {
   if (keyCode == 32) {
-    if (lives > 0) {
-      Matter.Body.setPosition(polygon, {x: 200, y: height / 2})
-      slingshot.attach();
+    if (lives > 0 && infinlife === false) {
+      if (ball === "polygon1") {
+        Matter.Body.setPosition(polygon, {x: 200, y: height / 2})
+        slingshot.attach();
+      }
+      if (ball === "polygon2") {
+        Matter.Body.setPosition(polygon2, {x: 200, y: height / 2})
+        slingshot2.attach();
+      }
+    }
+    if (infinlife === true) {
+      if (ball === "polygon1") {
+        Matter.Body.setPosition(polygon, {x: 200, y: height / 2})
+        slingshot.attach();
+      }
+      if (ball === "polygon2") {
+        Matter.Body.setPosition(polygon2, {x: 200, y: height / 2})
+        slingshot2.attach();
+      }
     }
   }
+
   if (keyCode == 13) {
     if (gamestate == "moveOn") {
       if (level == 1) {
@@ -230,9 +402,16 @@ function keyPressed() {
       }
       level += 1;
       gamestate = "play";
-      Matter.Body.setPosition(polygon, {x: 200, y: height / 2})
-      polygon.speed = 0;
-      slingshot.attach();
+      if (ball === "polygon1") {
+        Matter.Body.setPosition(polygon, {x: 200, y: height / 2})
+        polygon.speed = 0;
+        slingshot.attach();
+      }
+      if (ball === "polygon2") {
+        Matter.Body.setPosition(polygon2, {x: 200, y: height / 2})
+        polygon2.speed = 0;
+        slingshot2.attach();
+      }
     }
   }
 }
@@ -240,4 +419,41 @@ function keyPressed() {
 function activate() {
   shopb.hide();
   section = "shop";
+  exitb.show();
+}
+
+function activate2() {
+  exitb.hide();
+  shopb.show();
+  section = "main"
+}
+
+function purchasepoly() {
+
+  //Changing to the bigger polygon
+  ball = "polygon2";
+  World.add(world, polygon2);
+  polygon2.speed = 0;
+  Matter.Body.setPosition(polygon2, {x: 200, y: height / 2})
+  slingshot2.attach();
+  World.remove(world, polygon);
+
+  //Remaking the shop screen
+  purchase = "big"
+
+  //Subtracting money
+  score -= POLYGONAMOUNT;
+}
+
+function purchaselife() {
+
+  //Changing to infinity lives
+  lives = -1;
+  infinlife = true;
+
+  //Remaking the shop screen
+  purchase2 = "big";
+
+  //Subtracting the money
+  score -= INFINITEAMOUNT;
 }

@@ -10,6 +10,9 @@ button {
   background-color: lavender;
   border-style: solid;
   border-radius: 100px;
+  font-family: 'Goldman', cursive;
+  font-size: 12pt;
+  text-align: center;
 }
 
 button:hover {
