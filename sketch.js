@@ -7,12 +7,13 @@ var engine, world;
 
 var INFINITEAMOUNT = 400;
 var POLYGONAMOUNT = 200;
+var SKIPAMOUNT = 500;
 
 var lives = 5;
 var level = 1;
-var score = 300;
+var score = 0;
 
-var polyIMG, infinIMG;
+var polyIMG, infinIMG, skipIMG;
 
 var check = 0;
 var gamestate = "play";
@@ -28,6 +29,7 @@ var infinlife = false;
 function preload() {
   polyIMG = loadImage("polygon.png");
   infinIMG = loadImage("infinity.png");
+  skipIMG = loadImage("skip.png");
 }
 
 function setup() {
@@ -229,7 +231,7 @@ function draw() {
     image(polyIMG, width / 2 - 8, height / 2 - 120, 140, 140)
     textSize(20);
     fill('black');
-    text("Bigger and more destructive polygon: $150", width / 2 - 120, height / 2 + 60);
+    text("Bigger and more destructive polygon: $" + POLYGONAMOUNT, width / 2 - 120, height / 2 + 60);
 
     //Setting exit button options
     exitb.position(width - 140, height - 100);
@@ -268,7 +270,7 @@ function draw() {
     */
     image(infinIMG, width / 2 + 420, height / 2 - 120, 240, 120);
     textSize(20);
-    text("Infinite Lives: $300", (width / 2) + 450, (height / 2) + 60);
+    text("Infinite Lives: $" + INFINITEAMOUNT, (width / 2) + 450, (height / 2) + 60);
     if (score > INFINITEAMOUNT && purchase2 != "big") {
       infinbutton.show();
       infinbutton.position(width / 2 + 428, (height / 5) * 3);
@@ -286,7 +288,41 @@ function draw() {
       fill("black");
       text("Purchased", width / 2 + 438, (height / 8)  * 5)
     }
+    /*
+
+
+
+
+    To easily see the next item in the shop
+
+
+
+
+    */
+    image(skipIMG, width / 2 - 460, height / 2 - 120, 200, 120);
+    textSize(20);
+    text("Skip the level: $" + SKIPAMOUNT, (width / 2) - 490, (height / 2) + 60);
+    textSize(15);
+    text("Purchase on the level you want to skip", width / 2 - 490, height / 2 + 30);
+    if (score > SKIPAMOUNT && purchase3 != "big") {
+      skipbutton.show();
+      skipbutton.position(width / 2 + 428, (height / 5) * 3);
+      skipbutton.size(120, 60);
+      skipbutton.mousePressed(purchaseskip);
+    }
+    if (score < SKIPAMOUNT && purchase3 != "big") {
+      textSize(15);
+      skipbutton.hide();
+      text("Not enough money", width / 2 - 480, (height / 8) * 5)
+    }
+    if (purchase3 === "big") {
+      skipbutton.hide();
+      textSize(18);
+      fill("black");
+      text("Purchased", width / 2 - 438, (height / 8)  * 5)
+    }
   }
+  
 }
 
 function mouseDragged() {
