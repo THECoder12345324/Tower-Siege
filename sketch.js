@@ -24,9 +24,13 @@ var ball = "polygon1";
 
 var purchase = "none";
 var purchase2 = "none";
+var purchase3 = "none";
 var infinlife = false;
 
+var backgroundImg;
+
 function preload() {
+  //getBackgroundIMG();
   polyIMG = loadImage("polygon.png");
   infinIMG = loadImage("infinity.png");
   skipIMG = loadImage("skip.png");
@@ -75,18 +79,25 @@ function setup() {
 
   infinbutton = createButton("BUY");
   infinbutton.hide();
+
+  skipbutton = createButton("BUY");
+  skipbutton.hide();
 }
 
 function draw() {
-  background(173, 216, 230);
+  if (backgroundImg) {
+    background(backgroundImg);
+  }
+  else {
+    background(173, 216, 230);
+  }
   if (section === "main") {
     Engine.update(engine);
   }
 
   if (section === "main") {
-    fill("red");
-    shopb.position(30, height - 100);
-    shopb.size(100, 40);
+    shopb.position(1600, 140);
+    shopb.size(120, 60);
     shopb.mousePressed(activate);
     polygon2buy.hide();
 
@@ -94,9 +105,9 @@ function draw() {
     strokeWeight(1);
     textSize(25);
     fill("black");
-    text("Drag the mouse the launch the hexagon, and knock down as many as you can before your lives run out!", 330, 30);
+    /*text("Drag the mouse the launch the hexagon, and knock down as many as you can before your lives run out!", 330, 30);
     text("Press space to bring the hexagon back to starting position. You will lost a life every time you launch.", 330, 70);
-    
+    */
     textSize(35);
     if (infinlife === false) {
       text("Lives: " + lives, 20, 40);
@@ -106,9 +117,9 @@ function draw() {
       image(infinIMG, 110, 15, 50, 30);
     }
 
-    text("Level: " + level, 170, 40);
+    text("Level: " + level, 200, 40);
 
-    text("Money: " + score, 20, 80);
+    text("Money: " + score, 380, 40);
     pop();
 
     ground.display();
@@ -138,8 +149,6 @@ function draw() {
     if (gamestate == "WIN") {
       textSize(40);
       text("YOU WIN!!!", width / 2 - 100, height / 2);
-      stand5.destroy();
-      stand6.destroy();
     }
     if (level == 2) {
       pyramid2.display();
@@ -185,6 +194,8 @@ function draw() {
       if (check == 6) {
         gamestate = "WIN";
         leftwall= new Ground(0, height / 2, 1, height);
+        stand5.destroy();
+        stand6.destroy();
       }
     }
 
@@ -234,14 +245,14 @@ function draw() {
     text("Bigger and more destructive polygon: $" + POLYGONAMOUNT, width / 2 - 120, height / 2 + 60);
 
     //Setting exit button options
-    exitb.position(width - 140, height - 100);
+    exitb.position(1600, 140);
     exitb.size(100, 60);
     exitb.mousePressed(activate2);
 
     //Setting buying big polygon button options
     if (score > POLYGONAMOUNT && purchase != "big") {
       polygon2buy.show();
-      polygon2buy.position(width / 2, (height / 5) * 3);
+      polygon2buy.position((windowWidth/2), 630);
       polygon2buy.size(120, 60);
       polygon2buy.mousePressed(purchasepoly);
     }
@@ -273,7 +284,7 @@ function draw() {
     text("Infinite Lives: $" + INFINITEAMOUNT, (width / 2) + 450, (height / 2) + 60);
     if (score > INFINITEAMOUNT && purchase2 != "big") {
       infinbutton.show();
-      infinbutton.position(width / 2 + 428, (height / 5) * 3);
+      infinbutton.position(windowWidth / 2 + 428, 630);
       infinbutton.size(120, 60);
       infinbutton.mousePressed(purchaselife);
     }
@@ -306,7 +317,7 @@ function draw() {
     text("Purchase on the level you want to skip", width / 2 - 490, height / 2 + 30);
     if (score > SKIPAMOUNT && purchase3 != "big") {
       skipbutton.show();
-      skipbutton.position(width / 2 + 428, (height / 5) * 3);
+      skipbutton.position(windowWidth / 2 - 428, 630);
       skipbutton.size(120, 60);
       skipbutton.mousePressed(purchaseskip);
     }
@@ -436,6 +447,11 @@ function keyPressed() {
         stand6 = new Ground(600, 720, 200, 15);
         lives = 7;
       }
+      if (level == 4) {
+        gamestate = "WIN";
+        stand5.destroy();
+        stand6.destroy();
+      }
       level += 1;
       gamestate = "play";
       if (ball === "polygon1") {
@@ -461,6 +477,9 @@ function activate() {
 function activate2() {
   exitb.hide();
   shopb.show();
+  skipbutton.hide();
+  infinbutton.hide();
+  polygon2buy.hide();
   section = "main"
 }
 
@@ -492,4 +511,15 @@ function purchaselife() {
 
   //Subtracting the money
   score -= INFINITEAMOUNT;
+}
+
+function purchaseskip() {
+  //Remaking the shop screen
+  purchase3 = "big";
+
+  //Subtracting the money
+  score -= SKIPAMOUNT;
+
+  //Moving onto the next level
+  gamestate = "moveOn";
 }

@@ -1,9 +1,11 @@
 html, body {
   margin: 0;
   padding: 0;
+  background-color: cornsilk;
 }
 canvas {
   display: block;
+  margin: auto;
 }
 button {
   display: block;
@@ -18,4 +20,44 @@ button {
 button:hover {
   background-color: peachpuff;
   transform: scale(1.5) perspective(1px)
+}
+
+h1 {
+  margin: auto;
+  text-align: center;
+  font-family: 'Indie Flower', cursive;
+}
+
+.instruct {
+  margin: auto;
+  text-align: center;
+  font-family: 'Indie Flower';
+  font-size: 20pt;
+}
+
+#final {
+  margin: auto;
+  text-align: center;
+  position: absolute;
+  font-family: 'Indie Flower';
+  font-size: 20pt;
+  top: 1015px;
+
+}
+#shop {
+  text-align: center;
+  position: absolute;
+  font-family: 'Indie Flower';
+  font-size: 20pt;
+  top: 930px;
+  right: windowWidth / 2;
+}
+#explain {
+  margin: auto;
+  text-align: center;
+  position: absolute;
+  font-family: 'Indie Flower';
+  font-size: 20pt;
+  top: 985px;
+  left: windowWidth / 2;
 }
